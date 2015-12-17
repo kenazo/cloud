@@ -6,10 +6,12 @@ import com.microsoft.windowsazure.Configuration;
 import com.microsoft.windowsazure.core.*;
 import com.microsoft.windowsazure.exception.ServiceException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Random;
-
 import javax.xml.datatype.*;
 
 public class SmartSpeedCamera {
@@ -28,12 +30,15 @@ public class SmartSpeedCamera {
 	Calendar calendar = Calendar.getInstance();
 	Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
 
-	public SmartSpeedCamera(int uniqueID, String streetName, String town, int maxSpeed) {
-		this.uniqueID = uniqueID;
-		this.streetName = streetName;
-		this.town = town;
-		this.maxSpeed = maxSpeed;
+	public SmartSpeedCamera() {
+//		this.uniqueID = uniqueID;
+//		this.streetName = streetName;
+//		this.town = town;
+//		this.maxSpeed = maxSpeed;
 
+		
+		
+		
 		Calendar calendar = Calendar.getInstance();
 		Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
 
@@ -56,21 +61,26 @@ public class SmartSpeedCamera {
 //			e1.printStackTrace();
 //		}
 
-		BrokeredMessage message = new BrokeredMessage("SmartSpeedCamera");
-		message.setProperty("type", type);
-		message.setProperty("id", getUniqueID());
-		message.setProperty("Street", getStreetName());
-		message.setProperty("Town", getTown());
-		message.setProperty("Limit", getMaxSpeed());
+}
+		
+		
+	public void sendMessage() {
+		
+	BrokeredMessage message = new BrokeredMessage("SmartSpeedCamera");
+	message.setProperty("type", type);
+	message.setProperty("id", getUniqueID());
+	message.setProperty("Street", getStreetName());
+	message.setProperty("Town", getTown());
+	message.setProperty("Limit", getMaxSpeed());
 
-		try {
-			service.sendTopicMessage("cloudtopic", message);
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	try {
+		service.sendTopicMessage("cloudtopic", message);
+	} catch (ServiceException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
-		System.out.println("Camera info: " + uniqueID + " " + streetName + " " + town + " " + maxSpeed);
+	System.out.println("Camera info: " + uniqueID + " " + streetName + " " + town + " " + maxSpeed);
 
 	}
 
