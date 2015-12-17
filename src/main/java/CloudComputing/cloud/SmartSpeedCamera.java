@@ -27,7 +27,7 @@ public class SmartSpeedCamera {
 		this.streetName = streetName;
 		this.town = town;
 		this.maxSpeed = maxSpeed;
-		this.type = 45;
+		this.type = 50;
 
 		Calendar calendar = Calendar.getInstance();
 		Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
@@ -49,7 +49,7 @@ public class SmartSpeedCamera {
 		}
 
 		RuleInfo ruleInfo = new RuleInfo("CameraRule");
-		ruleInfo = ruleInfo.withSqlExpressionFilter("MessageNumber > 30");
+		ruleInfo = ruleInfo.withSqlExpressionFilter("MessageNumber = 50");
 
 		try {
 			CreateRuleResult ruleResult = service.createRule("CloudTopic", "SmartSpeedCamera", ruleInfo);
@@ -69,7 +69,7 @@ public class SmartSpeedCamera {
 		
 
 		BrokeredMessage message = new BrokeredMessage("camera");
-		message.setProperty("type", "camera");
+		message.setProperty("type", type);
 		message.setProperty("id", uniqueID);
 		message.setProperty("'Street", streetName);
 		message.setProperty("Town", town);

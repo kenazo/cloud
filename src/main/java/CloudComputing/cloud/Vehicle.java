@@ -24,6 +24,8 @@ public class Vehicle {
 	private String vehicleType;
 	private int camId;
 	private Random r;
+	private int type = 30;
+	private ServiceBusContract service;
 
 	public Vehicle() {
 		setRegNumber();
@@ -40,6 +42,43 @@ public class Vehicle {
 //		int index = r.nextInt(model.length);
 //		String randomModel = model[index];
 //		vehicleType = randomModel;
+		
+		Configuration config = ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
+				"RootManageSharedAccessKey", "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=", ".servicebus.windows.net");
+
+		service = ServiceBusService.create(config);
+		
+		 SubscriptionInfo subInfo = new SubscriptionInfo("Vehicles");
+		try {
+			CreateSubscriptionResult result =
+			    service.createSubscription("CloudTopic", subInfo);
+			RuleInfo ruleInfo = new RuleInfo("myRuleGT3");
+			ruleInfo = ruleInfo.withSqlExpressionFilter("type = "+type);
+			CreateRuleResult ruleResult =
+			    service.createRule("CloudTopic", "Vehicles", ruleInfo);
+			// Delete the default rule, otherwise the new rule won't be invoked.
+			service.deleteRule("CloudTopic", "Vehicles", "$Default");
+		} catch (ServiceException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+
+
+		BrokeredMessage message = new BrokeredMessage("Vehicles");
+		message.setProperty("type", type);
+		message.setProperty("regNumber", regNumber);
+		message.setProperty("vehicleType", vehicleType);
+		message.setProperty("travelSpeed", speedOfTravel);
+
+
+		try {
+			service.sendTopicMessage("Cloudtopic", message);
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		System.out.println("Vehicle information: " + regNumber + " " +
 		 vehicleType + " " + speedOfTravel);
 
@@ -75,51 +114,16 @@ public class Vehicle {
 		vehicleType = randomModel;
 		}
 
-	Configuration config = ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
-			"RootManageSharedAccessKey", "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=", ".servicebus.windows.net");
+//	Configuration config = ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
+//			"RootManageSharedAccessKey", "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=", ".servicebus.windows.net");
+//
+//	ServiceBusContract service = ServiceBusService.create(config);
 
-	ServiceBusContract service = ServiceBusService.create(config);
+	  //Create a "LowMessages" filtered subscription
 
-	 // Create a "LowMessages" filtered subscription
-	SubscriptionInfo subInfo2 = new SubscriptionInfo("Vehicles");
+	
+		
 
-	{
-		try {
-			CreateSubscriptionResult result2 = service.createSubscription("CloudTopic", subInfo2);
-		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		RuleInfo ruleInfo2 = new RuleInfo("VehicleRule");
-		ruleInfo2 = ruleInfo2.withSqlExpressionFilter("MessageNumber <= 30");
-		try {
-			CreateRuleResult ruleResult2 = service.createRule("CloudTopic", "Vehicles", ruleInfo2);
-		} catch (ServiceException e11) {
-			Throwable e = null;
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// Delete the default rule, otherwise the new rule won't be invoked.
-		try {
-			service.deleteRule("CloudTopic", "Vehicles", "$Default");
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		BrokeredMessage message = new BrokeredMessage("MyMessage");
-		message.setProperty("type", "vehicle");
-		message.setProperty("regNumber", regNumber);
-		message.setProperty("vehicleType", vehicleType);
-		message.setProperty("travelSpeed", speedOfTravel);
-
-
-		try {
-			service.sendTopicMessage("Cloudtopic", message);
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+	
 	}
-}
+
