@@ -8,6 +8,7 @@ import com.microsoft.windowsazure.exception.ServiceException;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Random;
 
 import javax.xml.datatype.*;
 
@@ -20,14 +21,18 @@ public class SmartSpeedCamera {
 	private String town;
 	// The maximum speed limit for the area being monitored (in mph)
 	private int maxSpeed;
-	private int type;
+	private int type = 50;
+	private ServiceBusContract service;
+	private Random r;
+
+	Calendar calendar = Calendar.getInstance();
+	Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
 
 	public SmartSpeedCamera(int uniqueID, String streetName, String town, int maxSpeed) {
 		this.uniqueID = uniqueID;
 		this.streetName = streetName;
 		this.town = town;
 		this.maxSpeed = maxSpeed;
-		this.type = 50;
 
 		Calendar calendar = Calendar.getInstance();
 		Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
@@ -35,69 +40,70 @@ public class SmartSpeedCamera {
 		Configuration config = ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
 				"RootManageSharedAccessKey", "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=", ".servicebus.windows.net");
 
-		ServiceBusContract service = ServiceBusService.create(config);
-		TopicInfo topicInfo = new TopicInfo("CloudTopic");
+		service = ServiceBusService.create(config);
 
-		// Create a "HighMessages" filtered subscription
-		SubscriptionInfo subInfo = new SubscriptionInfo("SmartSpeedCamera");
+//		SubscriptionInfo subInfo = new SubscriptionInfo("SmartSpeedCamera");
+//
+//		try {
+//			CreateSubscriptionResult result = service.createSubscription("CloudTopic", subInfo);
+//			RuleInfo ruleInfo = new RuleInfo("myRuleGT3");
+//			ruleInfo = ruleInfo.withSqlExpressionFilter("type = " + type);
+//			CreateRuleResult ruleResult = service.createRule("CloudTopic", "SmartSpeedCamera", ruleInfo);
+//			// Delete the default rule, otherwise the new rule won't be invoked.
+//			service.deleteRule("CloudTopic", "SmartSpeedCamera", "$Default");
+//		} catch (ServiceException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 
-		try {
-			CreateSubscriptionResult result = service.createSubscription("CloudTopic", subInfo);
-		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		RuleInfo ruleInfo = new RuleInfo("CameraRule");
-		ruleInfo = ruleInfo.withSqlExpressionFilter("MessageNumber = 50");
-
-		try {
-			CreateRuleResult ruleResult = service.createRule("CloudTopic", "SmartSpeedCamera", ruleInfo);
-		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		// Delete the default rule, otherwise the new rule won't be invoked.
-		try {
-			service.deleteRule("CloudTopic", "SmartSpeedCamera", "$Default");
-		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		
-
-		BrokeredMessage message = new BrokeredMessage("camera");
+		BrokeredMessage message = new BrokeredMessage("SmartSpeedCamera");
 		message.setProperty("type", type);
-		message.setProperty("id", uniqueID);
-		message.setProperty("'Street", streetName);
-		message.setProperty("Town", town);
-		message.setProperty("Limit", maxSpeed);
+		message.setProperty("id", getUniqueID());
+		message.setProperty("Street", getStreetName());
+		message.setProperty("Town", getTown());
+		message.setProperty("Limit", getMaxSpeed());
 
 		try {
-			service.sendTopicMessage("CloudTopic", message);
+			service.sendTopicMessage("cloudtopic", message);
 		} catch (ServiceException e) {
-			System.out.print("ServiceException encountered: ");
-			System.out.println(e.getMessage());
-			System.exit(-1);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-	}
-
-	{
-
-		// try
-		//
-		// {
-		// CreateTopicResult result = service.createTopic(topicInfo);
-		// } catch (ServiceException e)
-		//
-		// {
-		// System.out.print("ServiceException encountered: ");
-		// System.out.println(e.getMessage());
-		// System.exit(-1);
-		// }
+		System.out.println("Camera info: " + uniqueID + " " + streetName + " " + town + " " + maxSpeed);
 
 	}
+
+	public int getUniqueID() {
+		return uniqueID;
+	}
+
+	public void setUniqueID(int uniqueID) {
+		this.uniqueID = uniqueID;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getTown() {
+		return town;
+	}
+
+	public void setTown(String town) {
+		this.town = town;
+	}
+
+	public int getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
+	}
+
 }

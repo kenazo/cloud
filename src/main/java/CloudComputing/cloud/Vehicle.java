@@ -34,36 +34,34 @@ public class Vehicle {
 		getVehicleType();
 		setSpeedOfTravel();
 		getSpeedOfTravel();
-//		String model[] = { "Truck", "Car", "Motorcycle" };
-//		r = new Random();
-//		speedOfTravel = r.nextInt(100);
-//		regNumber = RandomStringUtils.randomAlphanumeric(8);
-//		regNumber = regNumber.toUpperCase();
-//		int index = r.nextInt(model.length);
-//		String randomModel = model[index];
-//		vehicleType = randomModel;
-		
+		// String model[] = { "Truck", "Car", "Motorcycle" };
+		// r = new Random();
+		// speedOfTravel = r.nextInt(100);
+		// regNumber = RandomStringUtils.randomAlphanumeric(8);
+		// regNumber = regNumber.toUpperCase();
+		// int index = r.nextInt(model.length);
+		// String randomModel = model[index];
+		// vehicleType = randomModel;
+
 		Configuration config = ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
 				"RootManageSharedAccessKey", "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=", ".servicebus.windows.net");
 
 		service = ServiceBusService.create(config);
-		
-		 SubscriptionInfo subInfo = new SubscriptionInfo("Vehicles");
-		try {
-			CreateSubscriptionResult result =
-			    service.createSubscription("CloudTopic", subInfo);
-			RuleInfo ruleInfo = new RuleInfo("myRuleGT3");
-			ruleInfo = ruleInfo.withSqlExpressionFilter("type = "+type);
-			CreateRuleResult ruleResult =
-			    service.createRule("CloudTopic", "Vehicles", ruleInfo);
-			// Delete the default rule, otherwise the new rule won't be invoked.
-			service.deleteRule("CloudTopic", "Vehicles", "$Default");
-		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-
+		//
+		// SubscriptionInfo subInfo = new SubscriptionInfo("Vehicles");
+		// try {
+		// CreateSubscriptionResult result =
+		// service.createSubscription("CloudTopic", subInfo);
+		// RuleInfo ruleInfo = new RuleInfo("myRuleGT3");
+		// ruleInfo = ruleInfo.withSqlExpressionFilter("type = "+type);
+		// CreateRuleResult ruleResult =
+		// service.createRule("CloudTopic", "Vehicles", ruleInfo);
+		// // Delete the default rule, otherwise the new rule won't be invoked.
+		// service.deleteRule("CloudTopic", "Vehicles", "$Default");
+		// } catch (ServiceException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
 
 		BrokeredMessage message = new BrokeredMessage("Vehicles");
 		message.setProperty("type", type);
@@ -71,16 +69,14 @@ public class Vehicle {
 		message.setProperty("vehicleType", vehicleType);
 		message.setProperty("travelSpeed", speedOfTravel);
 
-
 		try {
-			service.sendTopicMessage("Cloudtopic", message);
+			service.sendTopicMessage("CloudTopic", message);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		System.out.println("Vehicle information: " + regNumber + " " +
-		 vehicleType + " " + speedOfTravel);
+
+		System.out.println("Vehicle information: " + regNumber + " " + vehicleType + " " + speedOfTravel);
 
 	}
 
@@ -112,18 +108,16 @@ public class Vehicle {
 		int index = r.nextInt(model.length);
 		String randomModel = model[index];
 		vehicleType = randomModel;
-		}
-
-//	Configuration config = ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
-//			"RootManageSharedAccessKey", "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=", ".servicebus.windows.net");
-//
-//	ServiceBusContract service = ServiceBusService.create(config);
-
-	  //Create a "LowMessages" filtered subscription
-
-	
-		
-
-	
 	}
 
+	// Configuration config =
+	// ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
+	// "RootManageSharedAccessKey",
+	// "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=",
+	// ".servicebus.windows.net");
+	//
+	// ServiceBusContract service = ServiceBusService.create(config);
+
+	// Create a "LowMessages" filtered subscription
+
+}
