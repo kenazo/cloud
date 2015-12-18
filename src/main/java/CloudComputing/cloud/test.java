@@ -32,12 +32,13 @@ public class test {
 	        e.printStackTrace();
 	    }
 	    
-				
+			
 		Vehicle test11 = new Vehicle();
 		Vehicle test2 = new Vehicle();
 		Vehicle test3 = new Vehicle();
 		Vehicle test4 = new Vehicle();
 
+	NoSQLconsumer test = new NoSQLconsumer();
 
 	}
 

@@ -76,7 +76,8 @@ public class Vehicle {
 			e.printStackTrace();
 		}
 
-		System.out.println("Vehicle information: " + regNumber + " " + vehicleType + " " + speedOfTravel);
+		System.out.println("Vehicle information: Registration plate is " + regNumber + ", vehicle type is "
+				+ vehicleType + ", current speed is " + speedOfTravel + "mph");
 
 	}
 
@@ -109,15 +110,5 @@ public class Vehicle {
 		String randomModel = model[index];
 		vehicleType = randomModel;
 	}
-
-	// Configuration config =
-	// ServiceBusConfiguration.configureWithSASAuthentication("speed-information-cloud",
-	// "RootManageSharedAccessKey",
-	// "SNc61/6wG4vRLDzj231ER26wAZy+0Cl1Qve0sAWyWTs=",
-	// ".servicebus.windows.net");
-	//
-	// ServiceBusContract service = ServiceBusService.create(config);
-
-	// Create a "LowMessages" filtered subscription
 
 }

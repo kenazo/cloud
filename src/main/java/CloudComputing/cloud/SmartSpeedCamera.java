@@ -31,11 +31,6 @@ public class SmartSpeedCamera {
 	Timestamp currentTimestamp = new java.sql.Timestamp(calendar.getTime().getTime());
 
 	public SmartSpeedCamera() {
-//		this.uniqueID = uniqueID;
-//		this.streetName = streetName;
-//		this.town = town;
-//		this.maxSpeed = maxSpeed;
-
 		
 		
 		
@@ -80,7 +75,7 @@ public class SmartSpeedCamera {
 		e.printStackTrace();
 	}
 
-	System.out.println("Camera info: " + uniqueID + " " + streetName + " " + town + " " + maxSpeed);
+	System.out.println("Camera info: " + "Unique identifier is " + uniqueID + ",  Street name is  " + streetName + ", Town is " + town + ", Speed limit is " + maxSpeed);
 
 	}
 
